@@ -306,10 +306,14 @@ def get_connection(secret_dict):
 
     # Try to obtain a connection to the db
     try:
-        conn = psycopg2.connect( host="a205123-enterprisetrial-tfms-lite-dev-dbinst-tfmslitebase.c5jcdtftvxw8.us-east-1.rds.amazonaws.com", user="TfmsAdmin", password="TfmsAdmin", dbname="tfmslitebase", port=5432)
-        print(conn)
-        return conn
-    except psycopg2.InternalError:
+        conn = psycopg2.connect(host=secret_dict['host'],dbname=secret_dict['dbname'],user=secret_dict['username'], password= secret_dict['password'], port = secret_dict['port'])
+        if conn is not None:
+            print(conn)
+            return conn
+        else:
+            print('Connection not established to PostgreSQL.')
+     
+    except (Exception, psycopg2.DatabaseError) as error:
         return None
 
 
