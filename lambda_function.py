@@ -1,5 +1,6 @@
 # Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
+# Please remove the print statements while debugging
 
 import boto3
 import json
@@ -154,7 +155,7 @@ def set_secret(service_client, arn, token):
         previous_dict = None
     current_dict = get_secret_dict(service_client, arn, "AWSCURRENT")
     pending_dict = get_secret_dict(service_client, arn, "AWSPENDING", token)
-    print("pending_dict  passed to conn call in set_secret",pending_dict )
+   # print("pending_dict  passed to conn call in set_secret",pending_dict )
 
     # First try to login with the pending secret, if it succeeds, return
     conn = get_connection(pending_dict)
@@ -174,12 +175,12 @@ def set_secret(service_client, arn, token):
         raise ValueError("Attempting to modify user for host %s other than current host %s" % (pending_dict['host'], current_dict['host']))
 
     # Now try the current password
-    print("current_dict  passed to conn call in set_secret since pending_dict conn was not successful",current_dict )
+    # print("current_dict  passed to conn call in set_secret since pending_dict conn was not successful",current_dict )
     conn = get_connection(current_dict)
     if not conn:
         if previous_dict:
             # If both current and pending do not work, try previous
-            print("previou_dict  passed to conn call in set_secret since pending_dict and current_dict conn was not successful",previous_dict)
+            # print("previou_dict  passed to conn call in set_secret since pending_dict and current_dict conn was not successful",previous_dict)
             conn = get_connection(previous_dict)
 
             # Make sure the user/host from previous and pending match
@@ -302,7 +303,7 @@ def get_connection(secret_dict):
     host=secret_dict['host']
     user=secret_dict['username']
     password=secret_dict['password']
-    print(port,dbname,host,user,password)
+    # print(port,dbname,host,user,password)
 
     # Try to obtain a connection to the db
     try:
