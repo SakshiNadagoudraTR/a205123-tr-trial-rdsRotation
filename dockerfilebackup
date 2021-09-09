@@ -1,0 +1,30 @@
+FROM public.ecr.aws/lambda/python:3.8
+
+# Copy function code
+COPY app/lambda_function.py ${LAMBDA_TASK_ROOT}
+
+# Install the function's dependencies from Okey repo
+# Install OKey repository
+#RUN yum install epel-release -y
+RUN yum install -y wget
+RUN yum install -y libreport-filesystem
+RUN wget http://springdale.math.ias.edu/data/puias/unsupported/7/x86_64//dnf-0.6.4-2.sdl7.noarch.rpm
+RUN wget http://springdale.math.ias.edu/data/puias/unsupported/7/x86_64/dnf-conf-0.6.4-2.sdl7.noarch.rpm
+RUN wget http://springdale.math.ias.edu/data/puias/unsupported/7/x86_64/python-dnf-0.6.4-2.sdl7.noarch.rpm
+RUN yum install -y dnf-0.6.4-2.sdl7.noarch.rpm dnf-conf-0.6.4-2.sdl7.noarch.rpm python-dnf-0.6.4-2.sdl7.noarch.rpm
+#RUN yum install dnf -y
+RUN dnf install http://repo.okay.com.mx/centos/8/x86_64/release/okay-release-1-1.noarch.rpm
+
+# Install libpq-devel rpm package:
+RUN dnf install libpq-devel --target "${LAMBDA_TASK_ROOT}"
+
+# Install python-devel rpm package:
+RUN  yum install python38-devel.x86_64 --target "${LAMBDA_TASK_ROOT}"
+
+# Install the function's dependencies using file requirements.txt
+# from your project folder.
+COPY requirements.txt  .
+RUN  pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
+
+# Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
+CMD [ "lambda_function.lambda_handler" ]
